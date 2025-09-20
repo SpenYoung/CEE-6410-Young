@@ -1,0 +1,14 @@
+B 3 C o m p i l a t i o n
+B 87 Equation Listing    SOLVE PRODUCTION Using LP From line 77
+D 90 PROFITCARS
+D 95 MATERIALCONSTRAINTS
+B 105 Column Listing      SOLVE PRODUCTION Using LP From line 77
+E 108 W
+E 125 CPROFIT
+B 133 Range Statistics    SOLVE PRODUCTION Using LP From line 77
+B 144 Model Statistics    SOLVE PRODUCTION Using LP From line 77
+B 157 Solution Report     SOLVE PRODUCTION Using LP From line 77
+F 190 PROFITCARS
+F 194 MATERIALCONSTRAINTS
+G 202 W
+G 211 CPROFIT

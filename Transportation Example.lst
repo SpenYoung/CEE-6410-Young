@@ -1,0 +1,232 @@
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/19/25 20:23:42 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+      CEE 6410 - Water Resources Systems Analysis
+      Example 2.2 from Bishop Et Al Text (https://digitalcommons.usu.edu/ecstatic_all/76/)
+      Modifies Example to add a labor constraint
+       
+      THE PROBLEM:
+       
+      A manufactorer can produce either coupes or minivans.  Data are as fol-lows:
+       
+      Seasonal Resource
+      Inputs or Profit        Crops        Resource
+      Availability
+              Coupe        Minivan
+      Metal        1000 lbs/veh        2000 lbs/veh      4x106 lbs/year
+      Circuits        4 #/veh        3 #/veh               12000 circuits
+      Labor         5hr/veh        2.5hr /veh              17,500 hours
+      Profit/car        $6,000        $7,000
+       
+                      Determine the optimal production for the two vehicles.
+       
+      THE SOLUTION:
+      Uses General Algebraic Modeling System to Solve this Linear Program
+       
+      David E Rosenberg
+      david.rosenberg@usu.edu
+      September 15, 2015
+  28   
+  29  * 1. DEFINE the SETS
+  30  SETS
+  31  * For car production problem
+  32       cars Cars to produce /Coups, Minivans/
+  33       materials resources used to produce vehicles /Metal, CircuitBoards, Labor/
+  34  ;
+  35   
+  36  * 2. DEFINE input data
+  37  PARAMETERS
+  38  * For car production problem
+  39      carprofit(cars) Profit per car produced
+  40          /Coups 6000
+  41          Minivans 7000/
+  42      carconstraints(materials) Right hand constraint values for car prod (per material)
+  43          /Metal 4000000
+  44          CircuitBoards 12000
+  45          Labor 17500/
+  46  ;
+  47   
+  48  TABLE Z(cars,materials) Left hand side constraint coefficients
+  49                   Metal    CircuitBoards   Labor
+  50    Coups           1000          4            5
+  51    Minivans         2000          3           2.5;
+  52   
+  53  * 3. DEFINE the variables
+  54  VARIABLES W(cars) cars to produce
+  55            CPROFIT total profit from producing cars;
+  56   
+  57  * Non-negativity constraints
+  58  POSITIVE VARIABLES W;
+  59   
+  60  * 4. COMBINE variables and data in equations
+  61  EQUATIONS
+  62     PROFITCARS Total profit from producing cars ($) the objective funciton value
+  63     MATERIALCONSTRAINTS(materials) Materials constraints;
+  64   
+  65  PROFITCARS ..            CPROFIT =E= SUM(cars, carprofit(cars)*W(cars));
+  66  MATERIALCONSTRAINTS(materials) ..  SUM(cars, Z(cars, materials) * W(cars)) =L= carconstraints(materials);
+  67   
+  68   
+  69   
+  70  * 5. DEFINE the MODEL from the EQUATIONS
+  71  *MODEL PLANTING /ALL/;
+  72  MODEL PRODUCTION /PROFITCARS, MATERIALCONSTRAINTS/;
+  73   
+  74  * 6. SOLVE the MODEL
+  75  * Solve the PLANTING model using a Linear Programming Solver (see File=>Options=>Solvers)
+  76  *     to maximize VPROFIT
+  77  SOLVE PRODUCTION USING LP MAXIMIZING CPROFIT;
+  78  * 6. CLick File menu => RUN (F9) or Solve icon and examine solution report in .LST file
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/19/25 20:23:42 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE PRODUCTION Using LP From line 77
+
+
+---- PROFITCARS  =E=  Total profit from producing cars ($) the objective funciton value
+
+PROFITCARS..  - 6000*W(Coups) - 7000*W(Minivans) + CPROFIT =E= 0 ; (LHS = 0)
+     
+
+---- MATERIALCONSTRAINTS  =L=  Materials constraints
+
+MATERIALCONSTRAINTS(Metal)..  1000*W(Coups) + 2000*W(Minivans) =L= 4000000 ; (LHS = 0)
+     
+MATERIALCONSTRAINTS(CircuitBoards)..  4*W(Coups) + 3*W(Minivans) =L= 12000 ; (LHS = 0)
+     
+MATERIALCONSTRAINTS(Labor)..  5*W(Coups) + 2.5*W(Minivans) =L= 17500 ; (LHS = 0)
+     
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/19/25 20:23:42 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE PRODUCTION Using LP From line 77
+
+
+---- W  cars to produce
+
+W(Coups)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+    -6000       PROFITCARS
+     1000       MATERIALCONSTRAINTS(Metal)
+        4       MATERIALCONSTRAINTS(CircuitBoards)
+        5       MATERIALCONSTRAINTS(Labor)
+
+W(Minivans)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+    -7000       PROFITCARS
+     2000       MATERIALCONSTRAINTS(Metal)
+        3       MATERIALCONSTRAINTS(CircuitBoards)
+        2.5     MATERIALCONSTRAINTS(Labor)
+
+
+---- CPROFIT  total profit from producing cars
+
+CPROFIT
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       PROFITCARS
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/19/25 20:23:42 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE PRODUCTION Using LP From line 77
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 1.200E+04, 4.000E+06] - Zero values observed as well
+Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+Matrix    [min, max] : [ 1.000E+00, 7.000E+03]
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/19/25 20:23:42 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE PRODUCTION Using LP From line 77
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            4
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            3
+NON ZERO ELEMENTS             9
+
+
+GENERATION TIME      =        0.078 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/19/25 20:23:42 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE PRODUCTION Using LP From line 77
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   PRODUCTION          OBJECTIVE  CPROFIT
+     TYPE    LP                  DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  77
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE         20000000.0000
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         3    2147483647
+*** This solver runs with a community license.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:     20000000.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU PROFITCARS          .              .              .             1.0000      
+
+  PROFITCARS  Total profit from producing cars ($) the objective funciton value
+
+---- EQU MATERIALCONSTRAINTS  Materials constraints
+
+                     LOWER          LEVEL          UPPER         MARGINAL
+
+Metal                -INF      4000000.0000   4000000.0000         2.0000      
+CircuitBoards        -INF        12000.0000     12000.0000      1000.0000      
+Labor                -INF        14000.0000     17500.0000          .          
+
+---- VAR W  cars to produce
+
+                LOWER          LEVEL          UPPER         MARGINAL
+
+Coups             .          2400.0000        +INF             .          
+Minivans          .           800.0000        +INF             .          
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR CPROFIT           -INF      2.0000000E+7        +INF             .          
+
+  CPROFIT  total profit from producing cars
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+
+
+EXECUTION TIME       =        0.359 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+
+
+USER: Course License                                 G250902+0003Ac-GEN
+      Utah State University                                     DCE4709
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\spenc\OneDrive\Desktop\CEE 6410\GAMS\Transportation Example.gms
+Output     C:\Users\spenc\OneDrive\Desktop\CEE 6410\GAMS\Transportation Example.lst
