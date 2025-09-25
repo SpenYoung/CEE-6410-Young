@@ -1,0 +1,232 @@
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 15:57:13 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+      CEE 6410 - Water Resources Systems Analysis
+      HW 4 GAMS solution for vehicle production problem
+       
+      THE PROBLEM:
+       
+      Deciding how vehicle parts should be allocated to different vehicles.  Data are as fol-lows:
+       
+       
+                              Truck           Sedan
+      Fuel Tanks           2 per veh        1 per veh               14,000 fuel tanks
+      Rows of Seats        1 per veh        2 per veh               18,000 rows of seats
+      4WD                  1 per veh        0 per veh               6,000 4wd parts
+      Total Vehicles       1                1                       10,000 vehicles
+      Return $/acre        $100             $110
+       
+                      Determine the optimal vehicle production for both vehicle types.
+       
+      THE SOLUTION:
+      Uses General Algebraic Modeling System to Solve this Linear Program
+       
+      Spencer Young
+      a02307423@aggies.usu.edu
+      September 24, 2025
+  26   
+  27  * 1. DEFINE the SETS
+  28  SETS veh crops growing /Truck, Sedan/
+  29       resources available resources /Fuel, Seats, 4WD, Total/;
+  30   
+  31  * 2. DEFINE input data
+  32  PARAMETERS
+  33     c(veh) Objective function coefficients ($ per vehicle)
+  34           /Truck 100,
+  35           Sedan 110/
+  36     b(resources) Right hand constraint values (per resource)
+  37            /Fuel 14000,
+  38             Seats  18000,
+  39             4WD  6000,
+  40             Total 10000/;
+  41   
+  42  TABLE A(veh,resources) Left hand side constraint coefficients
+  43                   Fuel    Seats    4WD    Total
+  44   Truck             2        1       1      1
+  45   Sedan             1        2       0      1;
+  46   
+  47   
+  48  * 3. DEFINE the variables
+  49  VARIABLES X(veh) Vehicles Produced (Number)
+  50            VPROFIT  total profit ($);
+  51   
+  52  * Non-negativity constraints
+  53  POSITIVE VARIABLES X;
+  54   
+  55  * 4. COMBINE variables and data in equations
+  56  EQUATIONS
+  57     PROFIT Total profit ($) and objective function value
+  58     RESOURCE_CONSTRAINT(resources) Resource constraint;
+  59   
+  60  PROFIT..                 VPROFIT =E= SUM(veh, c(veh)*X(veh));
+  61  RESOURCE_CONSTRAINT(resources) ..    SUM(veh, A(veh,resources)*X(veh)) =L= b(resources);
+  62   
+  63   
+  64  * 5. DEFINE the MODEL from the EQUATIONS
+  65  MODEL PRODUCTION /PROFIT, RESOURCE_CONSTRAINT/;
+  66  *Altnerative way to write (include all previously defined equations)
+  67   
+  68   
+  69  * 6. SOLVE the MODEL
+  70  * Solve the PLANTING model using a Linear Programming Solver (see File=>Options=>Solvers)
+  71  *     to maximize VPROFIT
+  72  SOLVE PRODUCTION USING LP MAXIMIZING VPROFIT;
+  73   
+  74  * 6. CLick File menu => RUN (F9) or Solve icon and examine solution report in .LST file
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 15:57:13 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE PRODUCTION Using LP From line 72
+
+
+---- PROFIT  =E=  Total profit ($) and objective function value
+
+PROFIT..  - 100*X(Truck) - 110*X(Sedan) + VPROFIT =E= 0 ; (LHS = 0)
+     
+
+---- RESOURCE_CONSTRAINT  =L=  Resource constraint
+
+RESOURCE_CONSTRAINT(Fuel)..  2*X(Truck) + X(Sedan) =L= 14000 ; (LHS = 0)
+     
+RESOURCE_CONSTRAINT(Seats)..  X(Truck) + 2*X(Sedan) =L= 18000 ; (LHS = 0)
+     
+RESOURCE_CONSTRAINT(4WD)..  X(Truck) =L= 6000 ; (LHS = 0)
+     
+REMAINING ENTRY SKIPPED
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 15:57:13 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE PRODUCTION Using LP From line 72
+
+
+---- X  Vehicles Produced (Number)
+
+X(Truck)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+     -100       PROFIT
+        2       RESOURCE_CONSTRAINT(Fuel)
+        1       RESOURCE_CONSTRAINT(Seats)
+        1       RESOURCE_CONSTRAINT(4WD)
+        1       RESOURCE_CONSTRAINT(Total)
+
+X(Sedan)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+     -110       PROFIT
+        1       RESOURCE_CONSTRAINT(Fuel)
+        2       RESOURCE_CONSTRAINT(Seats)
+        1       RESOURCE_CONSTRAINT(Total)
+
+
+---- VPROFIT  total profit ($)
+
+VPROFIT
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       PROFIT
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 15:57:13 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE PRODUCTION Using LP From line 72
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 6.000E+03, 1.800E+04] - Zero values observed as well
+Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+Matrix    [min, max] : [ 1.000E+00, 1.100E+02]
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 15:57:13 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE PRODUCTION Using LP From line 72
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            5
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            3
+NON ZERO ELEMENTS            10
+
+
+GENERATION TIME      =        0.015 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 15:57:13 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE PRODUCTION Using LP From line 72
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   PRODUCTION          OBJECTIVE  VPROFIT
+     TYPE    LP                  DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  72
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE          1080000.0000
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         3    2147483647
+*** This solver runs with a community license.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:      1080000.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU PROFIT              .              .              .             1.0000      
+
+  PROFIT  Total profit ($) and objective function value
+
+---- EQU RESOURCE_CONSTRAINT  Resource constraint
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Fuel         -INF        12000.0000     14000.0000          .          
+Seats        -INF        18000.0000     18000.0000        10.0000      
+4WD          -INF         2000.0000      6000.0000          .          
+Total        -INF        10000.0000     10000.0000        90.0000      
+
+---- VAR X  Vehicles Produced (Number)
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Truck          .          2000.0000        +INF             .          
+Sedan          .          8000.0000        +INF             .          
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR VPROFIT           -INF      1080000.0000        +INF             .          
+
+  VPROFIT  total profit ($)
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+
+
+EXECUTION TIME       =        0.062 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+
+
+USER: Course License                                 G250902+0003Ac-GEN
+      Utah State University                                     DCE4709
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\spenc\OneDrive\Desktop\CEE 6410\GAMS\HW4 Vehicle Prod.gms
+Output     C:\Users\spenc\OneDrive\Desktop\CEE 6410\GAMS\HW4 Vehicle Prod.lst
